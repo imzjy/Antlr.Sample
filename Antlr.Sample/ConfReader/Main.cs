@@ -11,19 +11,24 @@ namespace Antlr.Sample.ConfReader
     {
         public void Execute()
         {
-            ANTLRStringStream inStream = new ANTLRStringStream("LINE(9)");
+            string input = 
+            @"
+                Sart(0,0)
+                End(12,15)
+            ";
+            ANTLRStringStream inStream = new ANTLRStringStream(input);
             ConfLexer lexer = new ConfLexer(inStream);
             CommonTokenStream tokens = new CommonTokenStream(lexer);
             ConfParser parser = new ConfParser(tokens);
-            ConfParser.stat_return returnParser = parser.stat();
+            ConfParser.prog_return returnParser = parser.prog();
 
             var tree = returnParser.Tree as CommonTree;
 
             foreach (CommonTree item in tree.Children)
             {
-                if (item.Type == ConfLexer.FUNC)
+                if (item.Type == ConfLexer.ID)
                     Console.WriteLine("function=" + item.Text);
-                else if(item.Type == ConfLexer.PARAMS)
+                else if(item.Type == ConfLexer.INT)
                     Console.WriteLine("params:" + item.Text);
             }
 

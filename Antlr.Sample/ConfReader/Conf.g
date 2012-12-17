@@ -8,7 +8,40 @@ options {
 @parser::namespace { Antlr.Sample.ConfReader }
 @lexer::namespace { Antlr.Sample.ConfReader }
 
-stat: FUNC '(' PARAMS ')' ;
-FUNC  :   ('A'..'Z')+ ;
-PARAMS  :   ('0'..'9')+ ;
-WS  :   (' '|'\t')+ { Skip(); } ;
+prog   : stat+
+       ;
+
+stat   : expr NEWLINE -> expr
+       | NEWLINE ->
+       ;
+
+expr   : fname '(' parms ')'
+       ;
+
+fname  : ID
+       ;
+       
+parms  : INT (',' INT)* 
+       ;
+
+ID  :	('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')*
+    ;
+
+INT :	'0'..'9'+
+    ;
+
+COMMENT
+    :   '//' ~('\n'|'\r')* '\r'? '\n' {$channel=HIDDEN;}
+    |   '/*' ( options {greedy=false;} : . )* '*/' {$channel=HIDDEN;}
+    ;
+
+WS  :   ( ' '
+        | '\t'
+        | '\r'
+        | '\n'
+        ) {$channel=HIDDEN;}
+    ;
+
+NEWLINE : '\r'? '\n'
+        ;
+
